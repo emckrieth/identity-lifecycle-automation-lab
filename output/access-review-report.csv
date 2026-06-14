@@ -1,0 +1,4 @@
+UserPrincipalName,DisplayName,Department,Role,Finding,Enabled,MfaEnabled,Groups
+sam.taylor@example.com,Sam Taylor,IT,PrivilegedAdmin,Privileged access requires review,True,True,ROLE-Privileged-Admins;APP-ActiveRoles-Operators;APP-Monitoring-Admins;M365-IT-E5
+orphan.user@example.com,Orphan User,Legal,Contractor,MFA missing for enabled account,True,False,APP-Document-Management;FS-Legal-Read
+orphan.user@example.com,Orphan User,Legal,Contractor,Missing manager,True,False,APP-Document-Management;FS-Legal-Read

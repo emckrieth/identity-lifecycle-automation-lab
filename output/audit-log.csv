@@ -1,0 +1,4 @@
+Timestamp,TicketId,Workflow,UserPrincipalName,Action,Result,Details
+2026-06-14T12:00:00Z,REQ-1001,Joiner,jordan.lee@example.com,CreateUser,Success,Created simulated user object
+2026-06-14T12:00:01Z,REQ-1001,Joiner,jordan.lee@example.com,AssignGroups,Success,APP-Finance-Portal-Users;FS-Finance-Read;M365-Finance-E3
+2026-06-14T12:00:02Z,ACCESS-REVIEW,AccessReview,all,GenerateReport,Success,3 findings written to output/access-review-report.csv

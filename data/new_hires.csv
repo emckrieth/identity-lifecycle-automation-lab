@@ -1,0 +1,3 @@
+EmployeeId,UserPrincipalName,DisplayName,Department,Title,Manager,Role,StartDate,RequiresMfa,TicketId
+E1001,jordan.lee@example.com,Jordan Lee,Finance,Analyst,morgan.kim@example.com,FinanceAnalyst,2026-06-17,true,REQ-1001
+E1002,casey.rivera@example.com,Casey Rivera,IT,Operations Engineer,avery.chen@example.com,ITOperations,2026-06-17,true,REQ-1002

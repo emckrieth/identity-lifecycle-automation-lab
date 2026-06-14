@@ -1,0 +1,2 @@
+UserPrincipalName,TerminationDate,MailboxAction,ForwardTo,TicketId
+sam.taylor@example.com,2026-06-19,ConvertToSharedMailbox,manager@example.com,REQ-3001

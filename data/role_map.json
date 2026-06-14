@@ -1,0 +1,43 @@
+{
+  "FinanceAnalyst": {
+    "department": "Finance",
+    "groups": [
+      "APP-Finance-Portal-Users",
+      "FS-Finance-Read",
+      "M365-Finance-E3"
+    ],
+    "license": "M365_E3",
+    "requiresMfa": true
+  },
+  "ITOperations": {
+    "department": "IT",
+    "groups": [
+      "APP-Monitoring-Operators",
+      "APP-Ticketing-Resolvers",
+      "FS-IT-Operations",
+      "M365-IT-E3"
+    ],
+    "license": "M365_E3",
+    "requiresMfa": true
+  },
+  "ComplianceAnalyst": {
+    "department": "Compliance",
+    "groups": [
+      "APP-Compliance-Casework",
+      "FS-Compliance-Read",
+      "M365-Compliance-E3"
+    ],
+    "license": "M365_E3",
+    "requiresMfa": true
+  },
+  "PrivilegedAdmin": {
+    "department": "IT",
+    "groups": [
+      "ROLE-Privileged-Admins",
+      "APP-ActiveRoles-Operators",
+      "APP-Monitoring-Admins"
+    ],
+    "license": "M365_E5",
+    "requiresMfa": true
+  }
+}

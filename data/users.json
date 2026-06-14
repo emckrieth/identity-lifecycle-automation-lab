@@ -1,0 +1,59 @@
+[
+  {
+    "EmployeeId": "E0901",
+    "UserPrincipalName": "alex.morgan@example.com",
+    "DisplayName": "Alex Morgan",
+    "Department": "Finance",
+    "Title": "Finance Analyst",
+    "Manager": "morgan.kim@example.com",
+    "Role": "FinanceAnalyst",
+    "Enabled": true,
+    "MfaEnabled": true,
+    "License": "M365_E3",
+    "Groups": [
+      "APP-Finance-Portal-Users",
+      "FS-Finance-Read",
+      "M365-Finance-E3"
+    ],
+    "LastLoginDate": "2026-06-10",
+    "LastReviewedDate": "2026-05-01"
+  },
+  {
+    "EmployeeId": "E0902",
+    "UserPrincipalName": "sam.taylor@example.com",
+    "DisplayName": "Sam Taylor",
+    "Department": "IT",
+    "Title": "Systems Administrator",
+    "Manager": "avery.chen@example.com",
+    "Role": "PrivilegedAdmin",
+    "Enabled": true,
+    "MfaEnabled": true,
+    "License": "M365_E5",
+    "Groups": [
+      "ROLE-Privileged-Admins",
+      "APP-ActiveRoles-Operators",
+      "APP-Monitoring-Admins",
+      "M365-IT-E5"
+    ],
+    "LastLoginDate": "2026-06-12",
+    "LastReviewedDate": "2026-04-15"
+  },
+  {
+    "EmployeeId": "E0903",
+    "UserPrincipalName": "orphan.user@example.com",
+    "DisplayName": "Orphan User",
+    "Department": "Legal",
+    "Title": "Contractor",
+    "Manager": "",
+    "Role": "Contractor",
+    "Enabled": true,
+    "MfaEnabled": false,
+    "License": "M365_E1",
+    "Groups": [
+      "APP-Document-Management",
+      "FS-Legal-Read"
+    ],
+    "LastLoginDate": "2025-11-01",
+    "LastReviewedDate": "2025-12-01"
+  }
+]
