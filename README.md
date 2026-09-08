@@ -48,6 +48,7 @@ identity-lifecycle-automation-lab/
 |-- docs/
 |   |-- access-review-guide.md
 |   |-- architecture.md
+|   |-- controls-mapping.md
 |   |-- incident-scenarios.md
 |   |-- rollback-notes.md
 |   `-- runbook.md
@@ -95,6 +96,20 @@ This lab aligns with IT operations roles that require:
 - monitoring and exception reporting
 - compliance-minded access reviews
 - cross-functional support between identity, collaboration, infrastructure, and application teams
+
+## Controls and Risk Coverage
+
+The repo includes examples that map to common IAM controls:
+
+- joiner, mover, and leaver workflow traceability
+- role-based access assignment
+- disabled account review
+- privileged group review
+- stale access review detection
+- missing MFA detection
+- conflicting entitlement detection
+
+See `docs/controls-mapping.md` for a support-focused view of these controls.
 
 ## Suggested GitHub Pin Description
 
