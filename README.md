@@ -7,7 +7,7 @@ This project was designed to show identity and access management as an operation
 
 ## Keycloak sandbox extension
 
-A new Python workflow targets a real local Keycloak API for fictional-user provisioning and offboarding. Contract tests cover duplicate requests, partial failure, safe retry, and state verification. Seven live Keycloak checks passed, covering provisioning, duplicate requests, rejected credentials, service outage, and offboarding recovery. End-user SSO, MFA, and downstream access revocation remain separate milestones.
+A new Python workflow targets a real local Keycloak API for fictional-user provisioning and offboarding. Contract tests cover duplicate requests, partial failure, safe retry, and state verification. Seven live Keycloak checks passed, covering provisioning, duplicate requests, rejected credentials, service outage, and offboarding recovery. Ten additional HTTP protocol checks passed for PKCE sign-in, TOTP enforcement, active-session removal, and token denial at Keycloak. See [authentication verification](docs/keycloak-auth-verification.md). Production app federation and downstream/offline token validation remain separate milestones.
 
 See the [live case study](docs/keycloak-case-study.md), [sanitized results](examples/keycloak-live-results.json), [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistance and review record](docs/ai-development-review.md). The original PowerShell workflows below remain CSV/JSON simulations.
 

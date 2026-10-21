@@ -4,9 +4,9 @@ This extends the PowerShell CSV/JSON simulation with a Python client for a real 
 
 ## Current evidence
 
-- Workflow contract and failure tests: 11 passed; run with the command below.
+- Workflow contract and failure tests: 16 passed; run with the command below.
 - Real Keycloak 26.8.1 container execution: seven checks passed on October 21, 2026. See [the case study](keycloak-case-study.md) and [sanitized results](../examples/keycloak-live-results.json).
-- Interactive OIDC sign-in, MFA, SAML, SCIM, and downstream application revocation: not implemented or verified by this increment.
+- Login-form, PKCE, TOTP, active-session removal, refresh denial and access-token rejection at Keycloak: ten protocol checks passed. See [authentication verification](keycloak-auth-verification.md). SAML, SCIM, visual walkthrough and downstream/offline validation remain separate.
 - Project owner's personal review and demonstration: pending.
 
 Passing contract tests is not evidence of a completed live integration. Do not describe this as production IAM or Rippling experience.
@@ -62,7 +62,7 @@ A failure before account creation does not need cleanup. A failure after disable
 
 Successful output is `admin_state_verified`, not "all access revoked." The runner checks disabled account state, zero group memberships, and zero returned Keycloak user sessions. Existing access tokens can remain valid until expiry at services that validate them offline; application sessions and offline sessions require separate investigation. No login password is set by the joiner, so this increment cannot demonstrate a successful end-user login or its subsequent denial.
 
-Before claiming end-to-end access verification, add an OIDC test application, demonstrate sign-in before offboarding, verify sign-in denial afterward, and measure existing token/session behavior. MFA and SCIM are separate milestones.
+A separate [authentication harness](keycloak-auth-verification.md) now demonstrates real login-form requests before offboarding and denial afterward, with TOTP and token endpoint checks. It establishes active sessions and verifies their removal. This is HTTP protocol automation; a production relying-party application, visual walkthrough, SCIM and downstream/offline token behavior remain separate.
 
 ## Automated tests
 

@@ -60,9 +60,15 @@ sequenceDiagram
 
 Run the setup helper and live verifier using the instructions in [the sandbox guide](keycloak-sandbox.md). The runner prints each check and writes a sanitized report. It briefly stops and restarts only the named lab service and leaves its fictional user disabled.
 
-## What remains unproven
+## Authentication extension
 
-No active end-user session was established in this run. Zero returned sessions proves observed state, not termination of an active login. End-user OIDC sign-in, MFA, SCIM, SAML, offline sessions, and downstream access-token/session revocation require separate tests.
+A subsequent run added ten real protocol checks for required TOTP enrollment, invalid-code rejection, authorization-code login with PKCE, active-session removal, refresh-token denial, introspection, UserInfo rejection, and fresh sign-in denial after offboarding. The combined contract suite now has sixteen passing tests.
+
+See [authentication verification and review findings](keycloak-auth-verification.md) and the [newer report](../examples/keycloak-auth-results.json). The original seven-check snapshot above is retained as historical evidence.
+
+## Boundaries of the original seven-check run
+
+The original lifecycle run did not establish an active end-user session. The authentication extension subsequently added that evidence, PKCE login and TOTP enforcement. A visual walkthrough, SCIM, SAML, offline sessions, and downstream application/offline JWT validation remain outside the current milestone.
 
 ## Owner walkthrough prompts
 

@@ -1,8 +1,10 @@
-name: Identity sandbox contract tests
+name: Identity sandbox verification
 on:
   push:
   pull_request:
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   contract:
     runs-on: ubuntu-latest
@@ -12,3 +14,39 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m unittest discover -s tests -v
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Create ephemeral sandbox credentials
+        shell: python
+        run: |
+          import os, secrets
+          from pathlib import Path
+          values = {
+              "LAB_ADMIN_PASSWORD": secrets.token_urlsafe(48),
+              "LAB_CLIENT_SECRET": secrets.token_urlsafe(48),
+          }
+          text = "".join(key + "=" + value + "\n" for key, value in values.items())
+          Path("sandbox/.env").write_text(text)
+          with open(os.environ["GITHUB_ENV"], "a") as handle:
+              handle.write(text)
+      - name: Start isolated Keycloak
+        run: docker compose --project-name portfolio-identity-lab --env-file sandbox/.env -f sandbox/compose.yaml up -d
+      - name: Verify lifecycle and outage recovery
+        run: python -m sandbox.verify_live --run-live --docker "$(command -v docker)"
+      - name: Verify login, TOTP, sessions and tokens
+        run: python -m sandbox.verify_auth --run-live
+      - name: Preserve sanitized test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keycloak-verification
+          path: examples/keycloak*results.json
+      - name: Stop ephemeral sandbox
+        if: always()
+        run: docker compose --project-name portfolio-identity-lab --env-file sandbox/.env -f sandbox/compose.yaml down --volumes

@@ -36,7 +36,11 @@ A fake API contract can test retry behavior; it cannot prove compatibility with 
 ## Next milestones
 
 1. Owner review of the recorded live results and workflow (container run completed).
-2. Add an OIDC application and before/after access verification.
-3. Add MFA enrollment and policy tests.
+2. Review the completed HTTP authentication protocol evidence; a production OIDC relying-party app remains future work.
+3. Review the completed TOTP enrollment/enforcement tests; a personal authenticator walkthrough remains pending.
 4. Add SCIM provisioning as a distinct protocol integration.
 5. Connect asset assignment and ticket intake after identity verification is demonstrated.
+
+## Completed authentication evidence
+
+Ten live protocol checks passed. Review found and corrected an opaque enrollment token/seed mix-up, local HTTP cookie handling, TOTP reuse timing, and missing token audience configuration. These are recorded with their fixes in docs/keycloak-auth-verification.md. Sixteen contract tests passed. GitHub-hosted execution remains pending until published.
