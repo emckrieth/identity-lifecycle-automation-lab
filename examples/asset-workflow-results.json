@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "check": "real_snipeit_fixtures_created",
+      "result": "passed",
+      "username": "lab-assets-cc910920",
+      "asset_tag": "LAB-CC910920"
+    },
+    {
+      "check": "signed_slack_fixture_queues_once_without_provisioning",
+      "result": "passed",
+      "ticket": "SLK-72ba56a4f4ecf51196c3235c"
+    },
+    {
+      "check": "unauthorized_approval_rejected",
+      "result": "passed"
+    },
+    {
+      "check": "approved_joiner_verified_in_both_services",
+      "result": "passed"
+    },
+    {
+      "check": "partial_failure_remains_incomplete",
+      "result": "passed",
+      "fault": "injected at asset stage"
+    },
+    {
+      "check": "retry_reuses_identity_and_existing_assignment",
+      "result": "passed"
+    },
+    {
+      "check": "leaver_disables_access_but_awaits_asset_return",
+      "result": "passed"
+    },
+    {
+      "check": "operator_receipt_verifies_checkin_and_closes_ticket",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Slack request is signed locally; no live Slack workspace/app installation",
+    "Asset physical receipt is an operator assertion, not proof of shipment",
+    "No MDM enrollment, Google Workspace, SCIM or SAML in this increment",
+    "Owner walkthrough pending"
+  ],
+  "status": "passed",
+  "run_id": "5588400be931441587ec2aac6d9ff74d",
+  "started_at_utc": "2026-10-21T18:17:20.259177+00:00",
+  "finished_at_utc": "2026-10-21T18:17:31.454722+00:00"
+}

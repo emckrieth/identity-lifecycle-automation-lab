@@ -16,7 +16,7 @@ jobs:
       - run: python -m unittest discover -s tests -v
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,12 +41,23 @@ jobs:
         run: python -m sandbox.verify_live --run-live --docker "$(command -v docker)"
       - name: Verify login, TOTP, sessions and tokens
         run: python -m sandbox.verify_auth --run-live
+      - name: Start isolated Snipe-IT
+        run: python -m sandbox.setup_assets --docker "$(command -v docker)"
+      - name: Verify approved identity and asset workflow
+        run: python -m sandbox.verify_assets --run-live
       - name: Preserve sanitized test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: keycloak-verification
-          path: examples/keycloak*results.json
+          path: output/verification/*results.json
+          if-no-files-found: warn
       - name: Stop ephemeral sandbox
         if: always()
         run: docker compose --project-name portfolio-identity-lab --env-file sandbox/.env -f sandbox/compose.yaml down --volumes
+      - name: Stop ephemeral asset sandbox
+        if: always()
+        run: |
+          if [ -f sandbox/assets/.env ]; then
+            docker compose --project-name portfolio-assets-lab --env-file sandbox/assets/.env -f sandbox/assets/compose.yaml down --volumes
+          fi
