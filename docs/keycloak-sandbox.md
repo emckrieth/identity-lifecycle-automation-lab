@@ -4,8 +4,8 @@ This extends the PowerShell CSV/JSON simulation with a Python client for a real 
 
 ## Current evidence
 
-- Workflow contract and failure tests: run with the command below.
-- Real Keycloak container execution: pending on a Docker-enabled machine.
+- Workflow contract and failure tests: 11 passed; run with the command below.
+- Real Keycloak 26.8.1 container execution: seven checks passed on October 21, 2026. See [the case study](keycloak-case-study.md) and [sanitized results](../examples/keycloak-live-results.json).
 - Interactive OIDC sign-in, MFA, SAML, SCIM, and downstream application revocation: not implemented or verified by this increment.
 - Project owner's personal review and demonstration: pending.
 
@@ -31,17 +31,17 @@ flowchart LR
 
 ## Setup on a Docker-enabled machine
 
-Requires Python 3.10+ and Docker Compose. From the repository root in PowerShell, create unique local sandbox secrets without pasting them into chat:
+Requires Python 3.10+ and Docker Desktop with Compose. From the repository root in PowerShell:
 
 ```powershell
-$env:LAB_ADMIN_PASSWORD = [guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
-$env:LAB_CLIENT_SECRET = [guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
-docker compose -f sandbox/compose.yaml up -d
+.\scripts\Start-KeycloakSandbox.ps1
 ```
 
-Wait for startup to complete using `docker compose -f sandbox/compose.yaml logs keycloak`. The service is bound to `127.0.0.1:8080`; dev mode is intended only for this local lab. The realm import creates a service account restricted to user/group operations in `portfolio-lab`. Administrative bootstrap credentials remain local.
+The helper finds Docker on PATH or in the usual per-user/system install locations, creates local secrets once in ignored `sandbox/.env`, starts the named `portfolio-identity-lab` project, and waits for realm discovery to respond. It loads `LAB_CLIENT_SECRET` into the current PowerShell process for the Python commands below. Keep using that same terminal, or rerun the helper in a new terminal.
 
-The named volume retains state. Existing realms are skipped during startup import: retain your original secret between restarts, or explicitly update the runner client's secret through the local admin console. Generating new environment secrets does not rotate credentials in an existing realm.
+The service is bound to `127.0.0.1:8080`; dev mode is intended only for this local lab. The imported service account has user/group administration roles in `portfolio-lab`. This is not a least-privilege production role design.
+
+The named volume retains state. Existing realms are skipped during startup import: retain the ignored `.env` file between restarts, or explicitly rotate the runner secret through the local admin console. Changing environment values alone does not rotate credentials in an existing realm. No credentials belong in Git or screenshots.
 
 ## Exercise
 
@@ -76,15 +76,26 @@ Tests use a stateful API contract double and injected transport failures. They c
 
 | Evidence | Expected result | Actual result |
 | --- | --- | --- |
-| First joiner | One enabled identity; lab-support membership | Pending |
-| Repeated joiner | Same identity; no duplicates | Pending |
-| Leaver | Disabled; no groups; no user sessions returned | Pending |
-| Repeated leaver | Same verified state | Pending |
-| Stopped service | Nonzero exit; incomplete audit record | Pending |
-| Restart and retry | Recorded recovery; verified admin state | Pending |
+| First joiner | One enabled identity; lab-support membership | Passed |
+| Repeated joiner | Same identity; no duplicates | Passed |
+| Leaver | Disabled; no groups; no user sessions returned | Passed; no active user session was established |
+| Repeated leaver | Same verified state | Passed |
+| Stopped service | Workflow failure; incomplete audit record | Passed |
+| Restart and retry | Recorded recovery; verified admin state | Passed |
 | Owner walkthrough | Explain scopes, failure handling, token limitations | Pending |
 
 Capture sanitized screenshots of account/group state and a ticket timeline; publish no credentials, cookies, tokens, or recovery keys.
+
+## Repeat the live verification
+
+After running the helper in the same PowerShell terminal:
+
+```powershell
+$dockerExe = Join-Path $env:LOCALAPPDATA "Programs\DockerDesktop\resources\bin\docker.exe"
+python -m sandbox.verify_live --run-live --docker $dockerExe
+```
+
+If Docker is installed elsewhere, pass that executable path instead. The opt-in runner creates a fresh fictional user, deliberately stops and restarts only the `portfolio-identity-lab` Keycloak service, checks recovery, and writes `examples/keycloak-live-results.json`. It appends private step records to ignored `output/keycloak-live-audit.jsonl`. The result file is a snapshot of the most recent run; review it before committing an update.
 
 ## Sources
 

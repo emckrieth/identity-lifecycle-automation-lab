@@ -22,7 +22,7 @@ No personal design, review, hands-on verification, or production outcome is clai
 
 Assistant review identified that counting a successful disable API call as complete offboarding would be misleading. The implementation reads back disabled state, membership, and user sessions, but explicitly reports interactive and downstream access tests as unverified.
 
-A fake API contract can test retry behavior; it cannot prove compatibility with a real Keycloak release. The live execution status remains pending.
+A fake API contract can test retry behavior; it cannot prove compatibility with a real Keycloak release. Seven real Keycloak checks passed on October 21, 2026; see the case study for results and boundaries. Owner review remains pending.
 
 ## Owner walkthrough checklist
 
@@ -35,7 +35,7 @@ A fake API contract can test retry behavior; it cannot prove compatibility with 
 
 ## Next milestones
 
-1. Run the container and record actual results in the evidence table.
+1. Owner review of the recorded live results and workflow (container run completed).
 2. Add an OIDC application and before/after access verification.
 3. Add MFA enrollment and policy tests.
 4. Add SCIM provisioning as a distinct protocol integration.

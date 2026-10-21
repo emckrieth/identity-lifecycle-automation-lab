@@ -7,9 +7,9 @@ This project was designed to show identity and access management as an operation
 
 ## Keycloak sandbox extension
 
-A new Python workflow targets a real local Keycloak API for fictional-user provisioning and offboarding. Contract tests cover duplicate requests, partial failure, safe retry, and state verification. Real container execution remains pending; end-user SSO, MFA, and downstream access revocation are not yet verified.
+A new Python workflow targets a real local Keycloak API for fictional-user provisioning and offboarding. Contract tests cover duplicate requests, partial failure, safe retry, and state verification. Seven live Keycloak checks passed, covering provisioning, duplicate requests, rejected credentials, service outage, and offboarding recovery. End-user SSO, MFA, and downstream access revocation remain separate milestones.
 
-See [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistance and review record](docs/ai-development-review.md). The original PowerShell workflows below remain CSV/JSON simulations.
+See the [live case study](docs/keycloak-case-study.md), [sanitized results](examples/keycloak-live-results.json), [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistance and review record](docs/ai-development-review.md). The original PowerShell workflows below remain CSV/JSON simulations.
 
 ## What It Demonstrates
 
@@ -26,7 +26,7 @@ See [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistanc
 
 Enterprise IT operations teams often support identity, SaaS access, email, file access, secure file transfer, two-factor authentication, and service request workflows. This lab mirrors those responsibilities in a safe local simulation.
 
-The scripts do not connect to real Active Directory, Entra ID, Microsoft 365, or Active Roles. Instead, they use CSV and JSON data to demonstrate the logic, controls, and documentation an operations engineer would use before integrating with live systems.
+The original PowerShell scripts do not connect to real Active Directory, Entra ID, Microsoft 365, or Active Roles. Instead, they use CSV and JSON data to demonstrate the logic, controls, and documentation an operations engineer would use before integrating with live systems.
 
 ## Quick Start
 
