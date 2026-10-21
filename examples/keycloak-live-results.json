@@ -1,0 +1,58 @@
+{
+  "executed_at_utc": "2026-10-21T17:26:44.918985+00:00",
+  "environment": {
+    "keycloak_image": "quay.io/keycloak/keycloak:26.8.1",
+    "python": "3.12.14",
+    "realm": "portfolio-lab",
+    "endpoint": "http://127.0.0.1:8080"
+  },
+  "username": "lab-live-61390bafca",
+  "checks": [
+    {
+      "check": "provision",
+      "result": "passed",
+      "enabled": true
+    },
+    {
+      "check": "duplicate_joiner",
+      "result": "passed",
+      "same_identity": true,
+      "group_count": 1
+    },
+    {
+      "check": "invalid_credentials",
+      "result": "passed",
+      "account_unchanged": true
+    },
+    {
+      "check": "service_outage",
+      "result": "passed",
+      "outcome": "incomplete"
+    },
+    {
+      "check": "restart_and_retry",
+      "result": "passed",
+      "enabled": false,
+      "groups": 0,
+      "returned_user_sessions": 0,
+      "verification": "admin_state_verified"
+    },
+    {
+      "check": "duplicate_leaver",
+      "result": "passed"
+    },
+    {
+      "check": "implicit_rehire_denied",
+      "result": "passed",
+      "enabled": false
+    }
+  ],
+  "limits": [
+    "No interactive end-user sign-in or MFA test",
+    "No active end-user session was created; zero-session state only",
+    "No downstream application, offline-session, or access-token revocation test",
+    "No SCIM or SAML integration in this increment",
+    "Owner personal review is pending"
+  ],
+  "status": "passed"
+}

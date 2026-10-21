@@ -2,3 +2,8 @@ output/*.csv
 !output/.gitkeep
 *.log
 .vscode/
+
+output/*.jsonl
+__pycache__/
+.env
+.env.*

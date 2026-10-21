@@ -1,0 +1,56 @@
+{
+  "executed_at_utc": "2026-10-21T17:43:28.288133+00:00",
+  "keycloak_image": "quay.io/keycloak/keycloak:26.8.1",
+  "checks": [
+    {
+      "check": "totp_enrollment_required_and_persisted",
+      "result": "passed"
+    },
+    {
+      "check": "password_alone_not_sufficient",
+      "result": "passed"
+    },
+    {
+      "check": "invalid_totp_rejected",
+      "result": "passed"
+    },
+    {
+      "check": "pkce_code_flow_and_userinfo",
+      "result": "passed",
+      "active_sessions_before": 2
+    },
+    {
+      "check": "access_token_active_before_offboarding",
+      "result": "passed"
+    },
+    {
+      "check": "active_sessions_removed",
+      "result": "passed"
+    },
+    {
+      "check": "refresh_token_rejected_after_offboarding",
+      "result": "passed"
+    },
+    {
+      "check": "old_access_token_inactive_at_introspection",
+      "result": "passed"
+    },
+    {
+      "check": "old_access_token_rejected_at_userinfo",
+      "result": "passed"
+    },
+    {
+      "check": "fresh_password_signin_denied_after_offboarding",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "HTTP form automation; no visual browser walkthrough",
+    "Not a production OIDC application; ID tokens are not consumed",
+    "No offline JWT-validation or downstream application session test",
+    "TOTP seed is held by the harness, not an independently held second factor",
+    "No SAML or SCIM integration",
+    "Owner review pending"
+  ],
+  "status": "passed"
+}

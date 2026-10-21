@@ -1,0 +1,37 @@
+{
+  "realm": "portfolio-lab",
+  "enabled": true,
+  "registrationAllowed": false,
+  "groups": [
+    {
+      "name": "lab-support"
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "lifecycle-runner",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "secret": "${LAB_CLIENT_SECRET}"
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-lifecycle-runner",
+      "enabled": true,
+      "serviceAccountClientId": "lifecycle-runner",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "query-groups"
+        ]
+      }
+    }
+  ]
+}
