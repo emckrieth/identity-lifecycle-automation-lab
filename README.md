@@ -4,6 +4,13 @@ A PowerShell-based identity operations lab that simulates joiner, mover, and lea
 
 This project was designed to show identity and access management as an operational support function: controlled provisioning, exception handling, auditability, access review, and repeatable runbooks.
 
+
+## Keycloak sandbox extension
+
+A new Python workflow targets a real local Keycloak API for fictional-user provisioning and offboarding. Contract tests cover duplicate requests, partial failure, safe retry, and state verification. Real container execution remains pending; end-user SSO, MFA, and downstream access revocation are not yet verified.
+
+See [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistance and review record](docs/ai-development-review.md). The original PowerShell workflows below remain CSV/JSON simulations.
+
 ## What It Demonstrates
 
 - PowerShell automation for identity lifecycle workflows
