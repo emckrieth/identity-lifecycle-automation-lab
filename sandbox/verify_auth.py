@@ -22,6 +22,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 from urllib.request import HTTPCookieProcessor, ProxyHandler, Request, build_opener
 
 from sandbox.keycloak_lifecycle import Client, LabError, NoRedirect, execute, user_lookup, verify
+from sandbox.evidence import evidence_run
 
 BASE = "http://127.0.0.1:8080"
 REALM = "portfolio-lab"
@@ -172,149 +173,154 @@ def run(report_path):
                          "No offline JWT-validation or downstream application session test",
                          "TOTP seed is held by the harness, not an independently held second factor",
                          "No SAML or SCIM integration", "Owner review pending"]}
-    secret = os.environ.get("LAB_CLIENT_SECRET", "")
-    admin_password = os.environ.get("LAB_ADMIN_PASSWORD", "")
-    verify(bool(admin_password), "Run Start-KeycloakSandbox.ps1 in this terminal first")
-    service = Client(BASE, secret)
-    service.login()
-    username = "lab-auth-" + secrets.token_hex(5)
-    password = secrets.token_urlsafe(32)
-    demo_secret = secrets.token_urlsafe(32)
-    audit = Path("output/keycloak-auth-audit.jsonl")
+    with evidence_run(report_path, report):
+        secret = os.environ.get("LAB_CLIENT_SECRET", "")
+        admin_password = os.environ.get("LAB_ADMIN_PASSWORD", "")
+        verify(bool(admin_password), "Run Start-KeycloakSandbox.ps1 in this terminal first")
+        service = Client(BASE, secret)
+        service.login()
+        username = "lab-auth-" + secrets.token_hex(5)
+        password = secrets.token_urlsafe(32)
+        demo_secret = secrets.token_urlsafe(32)
+        audit = Path("output/keycloak-auth-audit.jsonl")
 
-    def mark(name, **evidence):
-        checks.append({"check": name, "result": "passed", **evidence})
-        print(name + ": passed", flush=True)
+        def mark(name, **evidence):
+            checks.append({"check": name, "result": "passed", **evidence})
+            print(name + ": passed", flush=True)
 
-    def introspect(token):
-        response = Client(BASE, secret).request("POST", OIDC + "/token/introspect", {
-            "client_id": CLIENT, "client_secret": demo_secret, "token": token}, form=True)
-        return response.get("active") is True
-
-    try:
-        # Bootstrap client configuration only inside the fixed local lab realm.
-        fixture = Client(BASE, secret)
-        fixture.token = fixture.request("POST", "/realms/master/protocol/openid-connect/token", {
-            "grant_type": "password", "client_id": "admin-cli",
-            "username": "lab-admin", "password": admin_password}, form=True)["access_token"]
-        configuration = {"clientId": CLIENT, "enabled": True, "protocol": "openid-connect",
-                         "publicClient": False, "secret": demo_secret, "standardFlowEnabled": True,
-                         "directAccessGrantsEnabled": False,
-                         "redirectUris": [CALLBACK],
-                         "attributes": {"pkce.code.challenge.method": "S256"},
-                         "fullScopeAllowed": False,
-                         "protocolMappers": [{
-                             "name": "demo-audience", "protocol": "openid-connect",
-                             "protocolMapper": "oidc-audience-mapper",
-                             "config": {"included.client.audience": CLIENT,
-                                        "access.token.claim": "true",
-                                        "introspection.token.claim": "true",
-                                        "id.token.claim": "false"}}]}
-        clients = fixture.api("GET", "/clients?" + urlencode({"clientId": CLIENT}))
-        if not clients:
-            fixture.api("POST", "/clients", configuration)
-        else:
-            verify(len(clients) == 1, "Ambiguous demo client")
-            fixture.api("PUT", "/clients/" + clients[0]["id"], configuration)
-
-        execute(service, "joiner", username, "AUTH-JOIN", audit)
-        user = user_lookup(service, username)
-        uid = user["id"]
-        service.api("PUT", "/users/" + uid, {
-            "firstName": "Avery", "lastName": "Lab", "emailVerified": True,
-            "requiredActions": ["CONFIGURE_TOTP"]})
-        service.api("PUT", "/users/" + uid + "/reset-password",
-                    {"type": "password", "value": password, "temporary": False})
-
-        first = Browser(demo_secret)
-        challenge = first.password(username, password)
-        verify("code" not in challenge, "MFA enrollment was bypassed")
-        completed = first.enroll(challenge)
-        first_tokens = first.exchange(completed)
-        credentials = service.api("GET", "/users/" + uid + "/credentials")
-        verify(any(item.get("type") == "otp" for item in credentials),
-               "Enrolled OTP credential missing")
-        mark("totp_enrollment_required_and_persisted")
-
-        bad = Browser(demo_secret)
-        challenge = bad.password(username, password)
-        verify("code" not in challenge, "Password bypassed configured MFA")
-        mark("password_alone_not_sufficient")
-        rejected_code = "000000"
-        while rejected_code in {totp(first.otp_secret, offset) for offset in range(-1, 2)}:
-            rejected_code = str((int(rejected_code) + 1) % 1000000).zfill(6)
-        rejected = bad.submit(challenge, "otp", {"otp": rejected_code})
-        verify("code" not in rejected and any(
-            "otp" in form["inputs"] for form in Forms(rejected["html"]).forms),
-            "Invalid OTP was not rejected")
-        mark("invalid_totp_rejected")
-
-        good = Browser(demo_secret)
-        challenge = good.password(username, password)
-        # Keycloak rejects OTP reuse; wait for a fresh code after enrollment.
-        while int(time.time()) // 30 <= first.enrollment_counter:
-            time.sleep(0.25)
-        completed = good.submit(challenge, "otp", {"otp": totp(first.otp_secret)})
-        tokens = good.exchange(completed)
-        bearer = Client(BASE, "unused")
-        bearer.token = tokens["access_token"]
-        claims = bearer.request("GET", OIDC + "/userinfo")
-        verify(claims["sub"] == uid, "UserInfo did not identify the fixture user")
-        verify(introspect(tokens["access_token"]), "Access token not active before offboarding")
-        sessions = service.api("GET", "/users/" + uid + "/sessions")
-        verify(len(sessions) >= 1, "No active session before offboarding")
-        mark("pkce_code_flow_and_userinfo", active_sessions_before=len(sessions))
-        mark("access_token_active_before_offboarding")
-
-        execute(Client(BASE, secret), "leaver", username, "AUTH-LEAVER", audit)
-        verify(service.api("GET", "/users/" + uid + "/sessions") == [],
-               "Active user session survived offboarding")
-        mark("active_sessions_removed")
+        def introspect(token):
+            response = Client(BASE, secret).request("POST", OIDC + "/token/introspect", {
+                "client_id": CLIENT, "client_secret": demo_secret, "token": token}, form=True)
+            return response.get("active") is True
 
         try:
-            Client(BASE, "unused").request("POST", OIDC + "/token", {
-                "grant_type": "refresh_token", "client_id": CLIENT,
-                "client_secret": demo_secret,
-                "refresh_token": tokens["refresh_token"]}, form=True)
-        except LabError as exc:
-            verify(str(exc) == "API HTTP 400", "Unexpected refresh failure")
-        else:
-            raise LabError("Refresh token worked after offboarding")
-        mark("refresh_token_rejected_after_offboarding")
+            # Bootstrap client configuration only inside the fixed local lab realm.
+            fixture = Client(BASE, secret)
+            fixture.token = fixture.request("POST", "/realms/master/protocol/openid-connect/token", {
+                "grant_type": "password", "client_id": "admin-cli",
+                "username": "lab-admin", "password": admin_password}, form=True)["access_token"]
+            configuration = {"clientId": CLIENT, "enabled": True, "protocol": "openid-connect",
+                             "publicClient": False, "secret": demo_secret, "standardFlowEnabled": True,
+                             "directAccessGrantsEnabled": False,
+                             "redirectUris": [CALLBACK],
+                             "attributes": {"pkce.code.challenge.method": "S256"},
+                             "fullScopeAllowed": False,
+                             "protocolMappers": [{
+                                 "name": "demo-audience", "protocol": "openid-connect",
+                                 "protocolMapper": "oidc-audience-mapper",
+                                 "config": {"included.client.audience": CLIENT,
+                                            "access.token.claim": "true",
+                                            "introspection.token.claim": "true",
+                                            "id.token.claim": "false"}}]}
+            clients = fixture.api("GET", "/clients?" + urlencode({"clientId": CLIENT}))
+            if not clients:
+                fixture.api("POST", "/clients", configuration)
+            else:
+                verify(len(clients) == 1, "Ambiguous demo client")
+                fixture.api("PUT", "/clients/" + clients[0]["id"], configuration)
 
-        verify(not introspect(tokens["access_token"]),
-               "Introspection still reports old token active")
-        mark("old_access_token_inactive_at_introspection")
-        try:
-            bearer.request("GET", OIDC + "/userinfo")
-        except LabError as exc:
-            verify(str(exc) in ("API HTTP 401", "API HTTP 403"), "Unexpected UserInfo failure")
-        else:
-            raise LabError("UserInfo accepted old token after offboarding")
-        mark("old_access_token_rejected_at_userinfo")
+            execute(service, "joiner", username, "AUTH-JOIN", audit)
+            user = user_lookup(service, username)
+            uid = user["id"]
+            service.api("PUT", "/users/" + uid, {
+                "firstName": "Avery", "lastName": "Lab", "emailVerified": True,
+                "requiredActions": ["CONFIGURE_TOTP"]})
+            service.api("PUT", "/users/" + uid + "/reset-password",
+                        {"type": "password", "value": password, "temporary": False})
 
-        disabled = Browser(demo_secret).password(username, password)
-        verify("code" not in disabled and "input-error" in disabled.get("html", ""),
-               "Disabled account did not produce sign-in rejection")
-        mark("fresh_password_signin_denied_after_offboarding")
-        report["status"] = "passed"
-    except Exception as exc:
-        report["status"] = "failed"
-        report["failure_type"] = type(exc).__name__
-        raise
-    finally:
-        # Leave the disposable identity disabled even when a protocol check fails.
-        if user_lookup(service, username):
-            execute(Client(BASE, secret), "leaver", username, "AUTH-CLEANUP", audit)
-        report_path = Path(report_path)
-        report_path.parent.mkdir(parents=True, exist_ok=True)
-        report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            first = Browser(demo_secret)
+            challenge = first.password(username, password)
+            verify("code" not in challenge, "MFA enrollment was bypassed")
+            completed = first.enroll(challenge)
+            first_tokens = first.exchange(completed)
+            credentials = service.api("GET", "/users/" + uid + "/credentials")
+            verify(any(item.get("type") == "otp" for item in credentials),
+                   "Enrolled OTP credential missing")
+            mark("totp_enrollment_required_and_persisted")
+
+            bad = Browser(demo_secret)
+            challenge = bad.password(username, password)
+            verify("code" not in challenge, "Password bypassed configured MFA")
+            mark("password_alone_not_sufficient")
+            rejected_code = "000000"
+            while rejected_code in {totp(first.otp_secret, offset) for offset in range(-1, 2)}:
+                rejected_code = str((int(rejected_code) + 1) % 1000000).zfill(6)
+            rejected = bad.submit(challenge, "otp", {"otp": rejected_code})
+            verify("code" not in rejected and any(
+                "otp" in form["inputs"] for form in Forms(rejected["html"]).forms),
+                "Invalid OTP was not rejected")
+            mark("invalid_totp_rejected")
+
+            good = Browser(demo_secret)
+            challenge = good.password(username, password)
+            # Keycloak rejects OTP reuse; wait for a fresh code after enrollment.
+            while int(time.time()) // 30 <= first.enrollment_counter:
+                time.sleep(0.25)
+            completed = good.submit(challenge, "otp", {"otp": totp(first.otp_secret)})
+            tokens = good.exchange(completed)
+            bearer = Client(BASE, "unused")
+            bearer.token = tokens["access_token"]
+            claims = bearer.request("GET", OIDC + "/userinfo")
+            verify(claims["sub"] == uid, "UserInfo did not identify the fixture user")
+            verify(introspect(tokens["access_token"]), "Access token not active before offboarding")
+            sessions = service.api("GET", "/users/" + uid + "/sessions")
+            verify(len(sessions) >= 1, "No active session before offboarding")
+            mark("pkce_code_flow_and_userinfo", active_sessions_before=len(sessions))
+            mark("access_token_active_before_offboarding")
+
+            execute(Client(BASE, secret), "leaver", username, "AUTH-LEAVER", audit)
+            verify(service.api("GET", "/users/" + uid + "/sessions") == [],
+                   "Active user session survived offboarding")
+            mark("active_sessions_removed")
+
+            try:
+                Client(BASE, "unused").request("POST", OIDC + "/token", {
+                    "grant_type": "refresh_token", "client_id": CLIENT,
+                    "client_secret": demo_secret,
+                    "refresh_token": tokens["refresh_token"]}, form=True)
+            except LabError as exc:
+                verify(str(exc) == "API HTTP 400", "Unexpected refresh failure")
+            else:
+                raise LabError("Refresh token worked after offboarding")
+            mark("refresh_token_rejected_after_offboarding")
+
+            verify(not introspect(tokens["access_token"]),
+                   "Introspection still reports old token active")
+            mark("old_access_token_inactive_at_introspection")
+            try:
+                bearer.request("GET", OIDC + "/userinfo")
+            except LabError as exc:
+                verify(str(exc) in ("API HTTP 401", "API HTTP 403"), "Unexpected UserInfo failure")
+            else:
+                raise LabError("UserInfo accepted old token after offboarding")
+            mark("old_access_token_rejected_at_userinfo")
+
+            disabled = Browser(demo_secret).password(username, password)
+            verify("code" not in disabled and "input-error" in disabled.get("html", ""),
+                   "Disabled account did not produce sign-in rejection")
+            mark("fresh_password_signin_denied_after_offboarding")
+            report["status"] = "passed"
+        except Exception as exc:
+            report["status"] = "failed"
+            report["failure_type"] = type(exc).__name__
+            raise
+        finally:
+            original_failure = sys.exc_info()[0] is not None
+            try:
+                if user_lookup(service, username):
+                    execute(Client(BASE, secret), "leaver", username, "AUTH-CLEANUP", audit)
+                report["cleanup"] = "complete"
+            except Exception as cleanup_error:
+                report["cleanup"] = "incomplete"
+                report["cleanup_failure_type"] = type(cleanup_error).__name__
+                if not original_failure:
+                    raise
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-live", action="store_true")
-    parser.add_argument("--report", default="examples/keycloak-auth-results.json")
+    parser.add_argument("--report", default="output/verification/keycloak-auth-results.json")
     args = parser.parse_args()
     if not args.run_live:
         parser.error("--run-live is required")

@@ -11,7 +11,7 @@ From the repository root, in one PowerShell terminal:
 python -m sandbox.verify_auth --run-live
 ```
 
-The runner creates or updates the fixed `portfolio-demo` client in the local `portfolio-lab` realm using the local bootstrap admin. It generates a new disposable fictional user, password, client secret, and TOTP seed. Secrets and login HTML stay in process memory; the test user is offboarded at the end. The client secret is randomized on each run, so this demo client must not be shared with another application.
+The runner creates or updates the fixed `portfolio-demo` client in the local `portfolio-lab` realm using the local bootstrap admin. It generates a new disposable fictional user, password, client secret, and TOTP seed. The harness does not write passwords, seeds, tokens or login HTML to reports; Keycloak retains its own credential records in the private local volume; the test user is offboarded at the end. The client secret is randomized on each run, so this demo client must not be shared with another application.
 
 The bootstrap password is used only to configure this local test client. Lifecycle operations still use the dedicated lifecycle-runner service account.
 
@@ -65,6 +65,9 @@ The local development server emits Secure cookies. Python's default cookie polic
 
 ## Reproducibility and CI
 
-Sixteen contract tests cover workflow failure behavior plus TOTP correctness, callback state validation, credential destination restriction, and the loopback cookie exception. The GitHub Actions workflow defines separate contract and real-container jobs. Local execution passed. GitHub-hosted contract and real-container jobs also passed for implementation commit d7bf576: [verified Actions run](https://github.com/emckrieth/identity-lifecycle-automation-lab/actions/runs/39647478562).
+The contract tests cover workflow failure behavior plus TOTP correctness, callback state validation, credential destination restriction, and the loopback cookie exception. The GitHub Actions workflow defines separate contract and real-container jobs. Local execution passed. GitHub-hosted contract and real-container jobs also passed for implementation commit d7bf576: [verified Actions run](https://github.com/emckrieth/identity-lifecycle-automation-lab/actions/runs/39647478562).
 
 Sources: [Keycloak OIDC endpoints](https://www.keycloak.org/securing-apps/oidc-layers), [server administration](https://www.keycloak.org/docs/latest/server_admin/index.html).
+
+
+Runtime reports now use output/verification/keycloak-auth-results.json with a fresh run ID. Startup and cleanup failures are recorded atomically; committed example reports are never used as current CI artifacts. See docs/approved-asset-workflow.md for the reporting fix and expanded workflow.

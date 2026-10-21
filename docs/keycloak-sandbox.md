@@ -95,7 +95,7 @@ $dockerExe = Join-Path $env:LOCALAPPDATA "Programs\DockerDesktop\resources\bin\d
 python -m sandbox.verify_live --run-live --docker $dockerExe
 ```
 
-If Docker is installed elsewhere, pass that executable path instead. The opt-in runner creates a fresh fictional user, deliberately stops and restarts only the `portfolio-identity-lab` Keycloak service, checks recovery, and writes `examples/keycloak-live-results.json`. It appends private step records to ignored `output/keycloak-live-audit.jsonl`. The result file is a snapshot of the most recent run; review it before committing an update.
+If Docker is installed elsewhere, pass that executable path instead. The opt-in runner creates a fresh fictional user, deliberately stops and restarts only the `portfolio-identity-lab` Keycloak service, checks recovery, and writes `output/verification/keycloak-live-results.json`. It appends private step records to ignored `output/keycloak-live-audit.jsonl`. Runtime results are ignored by Git. Committed examples are historical snapshots; copy a result into examples only when intentionally archiving reviewed evidence.
 
 ## Sources
 

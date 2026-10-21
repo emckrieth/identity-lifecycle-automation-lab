@@ -11,6 +11,11 @@ A new Python workflow targets a real local Keycloak API for fictional-user provi
 
 See the [live case study](docs/keycloak-case-study.md), [sanitized results](examples/keycloak-live-results.json), [sandbox setup and evidence](docs/keycloak-sandbox.md) and the [AI assistance and review record](docs/ai-development-review.md). The original PowerShell workflows below remain CSV/JSON simulations.
 
+## Approved identity and asset operations
+
+The lab now connects Keycloak and a local Snipe-IT instance through a durable request queue. Approval gates provisioning, retries preserve incomplete work, and offboarding remains open until an operator confirms physical asset return. Eight checks passed against the real services; Slack intake was tested with locally signed fixtures and is not live-connected.
+
+See the [workflow case study and diagram](docs/approved-asset-workflow.md) and [archived observed results](examples/asset-workflow-results.json). Current verification runs write fresh, run-scoped reports under ignored output/verification; CI never uploads old committed examples as current evidence.
 ## What It Demonstrates
 
 - PowerShell automation for identity lifecycle workflows
