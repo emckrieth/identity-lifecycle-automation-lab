@@ -65,6 +65,6 @@ The local development server emits Secure cookies. Python's default cookie polic
 
 ## Reproducibility and CI
 
-Sixteen contract tests cover workflow failure behavior plus TOTP correctness, callback state validation, credential destination restriction, and the loopback cookie exception. The GitHub Actions workflow defines separate contract and real-container jobs. Local execution passed; a GitHub-hosted run is pending publication and must not be described as passing before it executes.
+Sixteen contract tests cover workflow failure behavior plus TOTP correctness, callback state validation, credential destination restriction, and the loopback cookie exception. The GitHub Actions workflow defines separate contract and real-container jobs. Local execution passed. GitHub-hosted contract and real-container jobs also passed for implementation commit d7bf576: [verified Actions run](https://github.com/emckrieth/identity-lifecycle-automation-lab/actions/runs/39647478562).
 
 Sources: [Keycloak OIDC endpoints](https://www.keycloak.org/securing-apps/oidc-layers), [server administration](https://www.keycloak.org/docs/latest/server_admin/index.html).

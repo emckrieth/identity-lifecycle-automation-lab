@@ -43,4 +43,4 @@ A fake API contract can test retry behavior; it cannot prove compatibility with 
 
 ## Completed authentication evidence
 
-Ten live protocol checks passed. Review found and corrected an opaque enrollment token/seed mix-up, local HTTP cookie handling, TOTP reuse timing, and missing token audience configuration. These are recorded with their fixes in docs/keycloak-auth-verification.md. Sixteen contract tests passed. GitHub-hosted execution remains pending until published.
+Ten live protocol checks passed. Review found and corrected an opaque enrollment token/seed mix-up, local HTTP cookie handling, TOTP reuse timing, and missing token audience configuration. These are recorded with their fixes in docs/keycloak-auth-verification.md. Sixteen contract tests passed. GitHub-hosted contract and real-container verification passed for implementation commit d7bf576; see Actions run 39647478562.
