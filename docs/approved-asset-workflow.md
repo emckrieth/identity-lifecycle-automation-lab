@@ -10,13 +10,13 @@
 - Slack-compatible request signing, timestamp validation, team allowlist and duplicate-request handling. Intake only queues; it never approves or provisions.
 - Atomic, run-scoped verification reports that record startup and cleanup failures.
 
-**Slack is not live-connected.** The current evidence uses a locally signed fixture, not a request received from Slack. No personal/developer workspace was available during this milestone. The template app manifest and intake endpoint are prepared for later installation.
+**Live Slack walkthrough completed October 22, 2026.** The owner installed the custom app, submitted real onboarding/offboarding slash commands, and personally ran approval, processing and simulated receipt. See the [walkthrough](slack-live-walkthrough.md) and [sanitized evidence](../examples/slack-live-walkthrough.json). The earlier eight-check automated report remains a historical run using a locally signed Slack fixture; CI does not access the personal workspace.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    S[Slack-compatible signed intake] --> Q[Pending approval in SQLite]
+    S[Live Slack signed intake] --> Q[Pending approval in SQLite]
     C[Local operator CLI] --> Q
     Q --> A[Separate authorized approval]
     A --> K[Keycloak identity step]
@@ -80,7 +80,7 @@ Queue actions and each transition are persisted in output/operations.sqlite3. A 
 ## Slack installation boundary
 
 1. Create a personal/developer workspace and a custom app using sandbox/slack-app-manifest.yaml.
-2. Replace the placeholder HTTPS request URL with an endpoint you control that forwards to the loopback intake. No public tunnel or hosting is configured by this project.
+2. Replace the placeholder HTTPS request URL with an endpoint you control that forwards to the loopback intake. The owner walkthrough used an accountless Cloudflare Quick Tunnel to port 8095. Its temporary hostname changes on restart; update both commands when it changes. No permanent hosting is provided.
 3. Configure SLACK_SIGNING_SECRET and an explicit SLACK_TEAM_IDS allowlist locally; never paste secrets in chat or commit them.
 4. Run python -m sandbox.slack_intake. The service listens on 127.0.0.1:8095.
 5. Send /lab-onboard lab-username LAB-ASSET or /lab-offboard lab-username LAB-ASSET.
@@ -96,10 +96,10 @@ Committed examples are historical snapshots. CI uploads only the current run's o
 
 ## AI assistance
 
-Codex implemented and tested this increment. Review findings included stale-success artifacts, exception masking during cleanup, SQLite connection handles left open on Windows, Snipe-IT API logical errors carried in HTTP 200, and signing-key ownership in the new container. The project owner's walkthrough remains pending.
+Codex implemented and tested this increment. Review findings included stale-success artifacts, exception masking during cleanup, SQLite connection handles left open on Windows, Snipe-IT API logical errors carried in HTTP 200, and signing-key ownership in the new container. The owner completed the guided live Slack workflow on October 22, 2026 and resolved a signing-secret mismatch by re-entering the correct secret. Codex prepared fixtures, added safe diagnostics and verified final API state. This is hands-on execution evidence, not a claim of independent implementation or full code review.
 
 ## Limits
 
-No live Slack installation, Mac/MDM enrollment, Google Workspace, SAML or SCIM. The asset-stage failure is injected; the API operations around it are real. Existing Keycloak protocol evidence remains separately documented. This lab is not production deployment or compliance certification.
+Live Slack installation and owner workflow execution are demonstrated. Mac/MDM enrollment, Google Workspace, SAML and SCIM remain outside this increment. The asset-stage failure is injected; the API operations around it are real. Existing Keycloak protocol evidence remains separately documented. This lab is not production deployment or compliance certification.
 
 Sources: [Snipe-IT Docker setup](https://snipe-it.readme.io/docs/docker), [Snipe-IT API semantics](https://snipe-it.readme.io/reference/api-overview), [Slack request verification](https://docs.slack.dev/authentication/verifying-requests-from-slack/).

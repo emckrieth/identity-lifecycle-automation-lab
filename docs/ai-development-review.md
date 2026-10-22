@@ -4,7 +4,7 @@
 
 This sandbox increment was prepared with Codex assistance. Existing commit history is retained. This document distinguishes assistant-generated implementation and automated checks from the project owner's personal review.
 
-No personal design, review, hands-on verification, or production outcome is claimed on the owner's behalf.
+The owner completed the guided Slack identity/asset workflow on October 22, 2026; see [the walkthrough](slack-live-walkthrough.md). Personal design ownership, comprehensive code review and production outcomes are not inferred from that execution.
 
 ## Decisions embodied in this increment
 
@@ -39,8 +39,13 @@ A fake API contract can test retry behavior; it cannot prove compatibility with 
 2. Review the completed HTTP authentication protocol evidence; a production OIDC relying-party app remains future work.
 3. Review the completed TOTP enrollment/enforcement tests; a personal authenticator walkthrough remains pending.
 4. Add SCIM provisioning as a distinct protocol integration.
-5. Connect asset assignment and ticket intake after identity verification is demonstrated.
+5. Completed: real Snipe-IT asset assignment and live Slack intake, including the owner-guided walkthrough.
 
 ## Completed authentication evidence
 
 Ten live protocol checks passed. Review found and corrected an opaque enrollment token/seed mix-up, local HTTP cookie handling, TOTP reuse timing, and missing token audience configuration. These are recorded with their fixes in docs/keycloak-auth-verification.md. Sixteen contract tests passed. GitHub-hosted contract and real-container verification passed for implementation commit d7bf576; see Actions run 39647478562.
+## Owner-guided Slack workflow, October 22, 2026
+
+The owner installed the app, submitted real slash commands and executed the local approval, provisioning, offboarding and simulated receipt commands. Terminal output showed pending_approval -> approved -> complete for onboarding and pending_approval -> approved -> awaiting_return -> complete for offboarding. Persisted queue events corroborated those transitions. Fresh API read-back verified the final disabled identity and unassigned asset.
+
+A real setup failure (invalid Slack signature) was diagnosed using fixed-message console diagnostics and resolved by the owner re-entering the correct signing secret. Codex also corrected a missing bot_user manifest section. The owner corrected missing PowerShell quotation marks around a ticket ID. These observations demonstrate guided troubleshooting and execution; the broader review checklist above remains open where not exercised. See [sanitized evidence](../examples/slack-live-walkthrough.json).
