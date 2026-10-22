@@ -1,0 +1,87 @@
+{
+  "evidence_type": "owner-guided live Slack walkthrough with queue history and current API read-back",
+  "walkthrough_date": "2026-10-22",
+  "verified_at_utc": "2026-10-22T17:32:40.770849+00:00",
+  "status": "passed",
+  "fictional_identity": "lab-avery",
+  "fictional_asset": "LAB-DEMO",
+  "requests": [
+    {
+      "request_alias": "slack-joiner-demo",
+      "action": "joiner",
+      "username": "lab-avery",
+      "asset_tag": "LAB-DEMO",
+      "final_status": "complete",
+      "approval": "local operator role assertion",
+      "events": [
+        {
+          "timestamp": "2026-10-22T15:36:53.090605+00:00",
+          "event": "submitted"
+        },
+        {
+          "timestamp": "2026-10-22T15:51:47.407301+00:00",
+          "event": "approved"
+        },
+        {
+          "timestamp": "2026-10-22T15:51:59.636662+00:00",
+          "event": "processing"
+        },
+        {
+          "timestamp": "2026-10-22T15:52:00.974895+00:00",
+          "event": "complete"
+        }
+      ]
+    },
+    {
+      "request_alias": "slack-leaver-demo",
+      "action": "leaver",
+      "username": "lab-avery",
+      "asset_tag": "LAB-DEMO",
+      "final_status": "complete",
+      "approval": "local operator role assertion",
+      "events": [
+        {
+          "timestamp": "2026-10-22T15:52:56.074859+00:00",
+          "event": "submitted"
+        },
+        {
+          "timestamp": "2026-10-22T17:00:16.898592+00:00",
+          "event": "approved"
+        },
+        {
+          "timestamp": "2026-10-22T17:00:17.222191+00:00",
+          "event": "processing"
+        },
+        {
+          "timestamp": "2026-10-22T17:00:17.498375+00:00",
+          "event": "awaiting_return"
+        },
+        {
+          "timestamp": "2026-10-22T17:03:50.655306+00:00",
+          "event": "receipt_confirmed_by_local_operator"
+        }
+      ]
+    }
+  ],
+  "current_api_readback": {
+    "keycloak_identity_enabled": false,
+    "snipeit_asset_assigned_to": null
+  },
+  "observations": [
+    "Owner submitted actual Slack slash commands and personally ran approval, processing and simulated receipt commands.",
+    "Initial invalid-signature rejection resolved by re-entering the correct app signing secret."
+  ],
+  "redactions": [
+    "Slack workspace and user IDs",
+    "Original ticket IDs",
+    "Credentials and temporary tunnel hostname"
+  ],
+  "limits": [
+    "Historical intermediate states come from owner-provided CLI output and persisted queue events, not independent historical API captures.",
+    "Final disabled identity and unassigned asset were independently read back through local APIs when this snapshot was recorded.",
+    "Approver is a local CLI role assertion, not a separately authenticated person.",
+    "Physical receipt was simulated.",
+    "Temporary development tunnel; no production hosting or uptime claim.",
+    "Automated CI continues to use a locally signed Slack fixture, not the personal workspace."
+  ]
+}

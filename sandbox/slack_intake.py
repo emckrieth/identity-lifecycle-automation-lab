@@ -57,7 +57,9 @@ def main():
             pass
 
         def do_POST(self):
+            print("Slack intake: POST received", flush=True)
             if self.path != "/slack/commands":
+                print("Slack intake: rejected unexpected path", flush=True)
                 self.send_error(404)
                 return
             try:
@@ -66,10 +68,25 @@ def main():
                 result = accept(self.rfile.read(length), dict(self.headers), secret, teams, queue)
                 payload = json.dumps(result).encode()
                 self.send_response(200)
-            except (LabError, ValueError):
+                print("Slack intake: accepted; request queued", flush=True)
+            except (LabError, ValueError) as error:
+                # Only fixed validation messages may reach the console. Never log
+                # request bodies, headers, credentials or arbitrary exceptions.
+                safe_reasons = {
+                    "Invalid Slack timestamp", "Expired Slack request",
+                    "Invalid Slack signature", "Missing or duplicate Slack field",
+                    "Slack team is not allowed", "Unsupported Slack command",
+                    "Use: lab-username LAB-ASSET", "Malformed Slack command",
+                    "Invalid request size", "Invalid request ID", "Invalid workflow",
+                    "Invalid lab identity", "Invalid lab asset tag",
+                    "Request ID reused with different content",
+                }
+                reason = str(error) if str(error) in safe_reasons else "validation failed"
+                print("Slack intake: rejected: " + reason, flush=True)
                 payload = b'{"error":"request rejected"}'
                 self.send_response(403)
             except Exception:
+                print("Slack intake: queue unavailable", flush=True)
                 payload = b'{"error":"queue unavailable; retry later"}'
                 self.send_response(503)
             self.send_header("Content-Type", "application/json")

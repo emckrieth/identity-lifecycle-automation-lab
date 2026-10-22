@@ -2,6 +2,9 @@ display_information:
   name: Portfolio IT Lab
   description: Approval-gated fictional identity and asset requests
 features:
+  bot_user:
+    display_name: portfolio-it-lab
+    always_online: false
   slash_commands:
     - command: /lab-onboard
       description: Request a fictional lab joiner
